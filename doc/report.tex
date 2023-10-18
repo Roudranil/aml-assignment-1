@@ -144,13 +144,17 @@
     \hrule
     \tableofcontents
 
-    \section{About the datasetse}
+    \section{About the datasets}
 
     In the given datasets we have images consisting of hand gestures corresponding to the english sign language and images consisting of dressing items. The images are \(28\times 28\) in resolution.
 
     \section{Processing the dataset}
 
-    The images were loaded from the corresponding csv file, where individual images are stored as rows, the columns being the pixel values. The images were then loaded as tensors and then normalised (we divided all pixel values by 266 to bring the values between 0 and 1).
+    The images were loaded from the corresponding csv file, where individual images are stored as rows, the columns being the pixel values. The images were then loaded as tensors and then normalised -
+    \begin{itemize}
+        \item for fashion mnist, we normalised the pixel values to 0 mean and 1 standard deviation
+        \item for sign language mnist we divided all pixel values by 256 to bring the values between 0 and 1
+    \end{itemize}
 
     \section{Fully connected NN vs CNN}
 
@@ -158,9 +162,20 @@
 
     CNN's are far more able to capture the local patterns and the hierarchies in the images - which implies that they are able to extract better features from the images.
 
-    \section{Comapring results}
+    \section{Comparing results}
 
     To compare results we trained both models for 10-30 epochs, and compared the results.
+
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{c|c|c|c|c|c}
+            ~ & \multicolumn{2}{c|}{Loss} & \multicolumn{2}{c|}{Accuracy} &  \\ 
+            Model & Best & Last & Best & Last & Time/Epoch. \\ \hline\hline
+            DNN & 0.3045 & 0.3154 & 89 & 89 & 18s \\
+            CNN & 0.2136 & 0.26 & 93 & 92 & 24s \\
+        \end{tabular}
+        \caption{Fashion mnist}
+    \end{table}
 
     \begin{table}[H]
         \centering
@@ -171,10 +186,31 @@
             CNN & 0.786 & 1.363 & 80.73 & 79.48 & 61s \\
             CNN with dropout & 0.377 & 0.419 & 90.31 & 89.3 & 62s \\
         \end{tabular}
+        \caption{Sign language mnist}
     \end{table}
 
+\section{Dependence of CNN on visual information}
 
+CNN's rely on the visual information and patterns present in images to a varying degree. We can judge this by seeing if the models trained on a permutation of the pixels of the original images performs the same as the model trained on the original images.
 
+For fashion mnist, which contains fairly simple images, there was not much difference in this scrambling - accuracy reduced from 93\% to 87\%.
+
+However for sign language mnist, there was a noticeable drop - from 90\% to 52\%.
+
+\section{FGSM attack on the networks}
+
+Here is the performance of the FGSM attack on the 2 datasets
+
+\centering
+\begin{figure}[H]
+    \includegraphics[width=15cm]{../data/fashionmnist-fgsm.png}
+    \caption{Fashion mnist CNN}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[width=15cm]{../data/signlanuage-fgsm.png}
+    \caption{Sign language mnist CNN}
+\end{figure}
 
 
 \end{document}
